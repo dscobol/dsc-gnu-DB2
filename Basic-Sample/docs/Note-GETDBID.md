@@ -1,0 +1,44 @@
+# Note: GETDBID.cbl
+
+This is a simple COBOL pgm that can be called by GnuCOBOL programs.
+
+It has the userid and password for a DB2 database embedded within it.
+
+Calling this bypasses the ACCEPT of the userid and password.
+
+Change the userid and password to the ones on your system.
+
+NOTE: Just replace the text, make sure the ' surrounding the text is present.
+
+GETDBID code:
+```
+      **********************************************************
+      * Program name:    GETDBID
+      * Original author: David Stagowski
+      *
+      *    Description: This is a called module to supply the
+      *       the userid and password for a DB2 database.
+      *    This was written because I got tired of typing them in
+      *    everytime I ran a program.
+      *
+      * Maintenence Log
+      * Date       Author        Maintenance Requirement
+      * ---------  ------------  -------------------------------
+      * 2023-03-08 dscobol
+      *
+      **********************************************************
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. GETDBID.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       LINKAGE SECTION.
+       01 DB-User-ID              PIC X(10).
+       01 DB-Passwd-Name          PIC X(18).
+
+       PROCEDURE DIVISION USING DB-User-ID, DB-Passwd-Name.
+
+           MOVE 'userid' TO DB-User-ID.
+           MOVE 'password' TO DB-Passwd-Name.
+
+           GOBACK.
+```

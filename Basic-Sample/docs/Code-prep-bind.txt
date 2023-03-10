@@ -1,0 +1,4 @@
+connect to DB user userid using password;
+prep ../cbl/PGM.sqb bindfile target ANSI_COBOL output ../tcbl/PGM.cbl;
+bind ../cbl/PGM.bnd;
+connect reset;
