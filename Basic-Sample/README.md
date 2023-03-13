@@ -6,7 +6,7 @@ Running these programs requires:
 - GnuCOBOL 3.1.2
 - You have added the db2profile to your .bashrc (or whatever shell you use .xxxrc file).
 
-For more information about creating the VM, installing the requirements and other information, go to the [DSCOBOL Website](https://dscobol.github.io)
+For more information about creating a VM, installing the requirements and other information, go to the [DSCOBOL Website](https://dscobol.github.io)
 
 Here is the list of program names and descriptions in the Basic-Sample directory:
 

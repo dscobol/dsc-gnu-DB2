@@ -6,16 +6,19 @@
       *
       *    This program will read and display all the
       *       records from a DB2 Table.
-      *    There are some differences between the GnuCOBOL and 
-      *       ZOS DB2 programs.
       *
-      *    The biggest difference is the 9800-Connect-to-DB1 paragraph.
+      *    There are some differences between GnuCOBOL/DB2 LUW and 
+      *       zOS COBOL/DB2 programs.
       *
-      *    On ZOS, the JCL makes the connection so there is no need for
+      *    One difference is demonstrated in the 
+      *        9800-Connect-to-DB1 paragraph.
+      *
+      *    On zOS, the JCL makes the connection so there is no need for
       *       passing the username and password for the database.
       *
       *    That is required with GnuCOBOL.
-      *    These GnuCOBOL programs use GETDBID, a very simple called
+      *    There are a number of ways to pass those parameters.
+      *    These programs use GETDBID, a very simple called
       *    module that has the username and password embedded in it.
       *    When called, it passes them up to the calling program which
       *    then uses them to make the connection to the server.
@@ -24,6 +27,7 @@
       * Date       Author        Maintenance Requirement
       * ---------- ------------  --------------------------------
       * 2020-08-29 dastagg       Created to learn.
+      * 2023-03-13 dscobol       Updated notes about differences.
       * 20XX-XX-XX               If you change me, change this.
       *
       **********************************************************
@@ -42,10 +46,13 @@
            END-EXEC.
 
       *******************
-      *    This is another BIG difference between GnuCOBOL
-      *    and ZOS. If the Host Variables are not DECLAREd
-      *    in GnuCOBOL, it is an error and it won't bind.
-      *    On ZOS, DECLAREing them is not required and if 
+      *    This is another difference between DB2 LUW
+      *    and zOS DB2.
+      * 
+      *    With DB2 LUW, if the Host Variables are not DECLAREd
+      *    in the code, it is an error and it won't bind.
+      *
+      *    With zOS DB2, DECLAREing them is not required and if 
       *    present, will cause a Warning(RC=04) for the compile.
 
            EXEC SQL BEGIN DECLARE SECTION END-EXEC.
