@@ -2,7 +2,7 @@
 
 This is a collection of COBOL programs written to be compiled by the GnuCOBOL compiler that will use embedded SQL statements to access an IBM DB2 LUW database system running on a Gnu/Linux OS(Pop!_OS).
 
-For more information about creating the VM, installing the requirements and other information, go to the [DSCOBOL Website](https://dscobol.github.io)
+For more information about creating a VM, installing the requirements and other information, go to the [DSCOBOL Website](https://dscobol.github.io)
 
 ## Basic-Sample directory
 
