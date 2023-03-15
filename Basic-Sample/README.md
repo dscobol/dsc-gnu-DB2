@@ -10,15 +10,15 @@ For more information about creating a VM, installing the requirements and other 
 
 Here is the list of program names and descriptions in the Basic-Sample directory:
 
-| Program  | Description                               | 
-| :------  | :---------------------------------------- | 
+| Program  | Description                               |
+| :------  | :---------------------------------------- |
 |          |                                           |
 | DBCBEX01 | This program will create a cursor then read and display all the records from a DB2 Table.|
 | DBCBEX02 | This program will read and display 1 record from a DB2 Table.|
 | DBCBEX03 | This program will read all the records using a View supplied by the DB and display them.|
 | DBCBEX13 | This program will read all the records using a View supplied by the DB and print a nice report.|
 
-All of these programs will only read data from the Sample DB. 
+All of these programs will only read data from the Sample DB.
 
 Programs that insert, update and delete will be in the Intermediate(Inter) directory.
 
@@ -48,7 +48,7 @@ Basic-Sample
 - jcl: the scripts used to compile and run
 - spool: the printed output - This is optional in some directories.
 
-  
+
 Special DB2 directories:
 - docs: public: examples of the files needed to run the programs
 - p-sqlscripts: public: versions of SQL DDL code
@@ -84,10 +84,13 @@ After cloning the repository, CD into the Basic-Sample directory and run this co
 ```
 mkdir bin p-sqlscripts spool sql SQLScripts tcbl
 ```
+### Create the .env file
+**IMPORTANT NOTE:**
+The .env file will contain the userid and password to the database. **MAKE SURE** to add ".env" to your .gitignore so when you commit changes, the .env file will NOT be included.
 
-Copy docs/Code-GETDBID.txt into tcbl/ and rename to GETDBID.cbl.
+Copy docs/Code-env.txt to the Basic-Sample root and rename to .env .
 
-Edit GETDBID.cbl changing 'userid' to the userid and 'password' to the password. Only replace the text within the quotes! Make sure the userid and password are surrounded by quotes.
+Edit .env  changing name to sample , userid to the userid and passwd to the password.
 
 ### Running a program - DBCBEX01
 Copy docs/Code-prep-bind.txt into sql/ and rename to DBCBEX01.sql
@@ -102,7 +105,7 @@ In the terminal, cd into jcl/ and run:
 ```
 ./dbcbex01-compile.sh
 ```
-Watch the output. There should be 0 errors on the prep/bind, press Enter to continue and the compile should return "Complier Return code was ZERO".
+Watch the output. There should be 0 errors on the prep/bind, press Enter to continue and the compile should return "SUCCESS: Compile Return code is ZERO.".
 
 If so, in the terminal run:
 ```
@@ -114,7 +117,7 @@ Follow this same procedure for the 3 other examples.
 
 ### What about SQLScripts and p-sqlscripts?
 
-In more advanced tutorials, SQLScripts is where actual SQL scripts are located. Scripts like "Create a table", "Insert Data" and such. 
+In more advanced tutorials, SQLScripts is where actual SQL scripts are located. Scripts like "Create a table", "Insert Data" and such.
 
 These usually have the userid and password embedded in them.
 
