@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Program parms
-RPGM=DBCBEX13
+# Set Up variables
+
+# Program to run
 PGM=DBCBEX13
-LLM=GETDBID
 
 # DB2 Load Libraries
 export LOADLIB="$DB2_HOME/lib64"
@@ -12,10 +12,10 @@ export LOADLIB="$DB2_HOME/lib64"
 export COBCOPY="../cpy"
 export SQLCOPY="$DB2_HOME/include/cobol_mf"
 
-# Clean up
+# Delete previous versions
 rm ../cbl/$PGM.bnd
 rm ../tcbl/$PGM.cbl
-rm ../bin/$RPGM
+rm ../bin/$PGM
 
 # DB2 Prep and Bind
 db2 -tvf ../sql/$PGM.sql
@@ -23,7 +23,7 @@ db2 -tvf ../sql/$PGM.sql
 read -p "Press any key to resume"
 
 # Compile
-cobc -std=default -x -o ../bin/$RPGM ../tcbl/$PGM.cbl ../tcbl/$LLM.cbl \
+cobc -std=default -x -o ../bin/$PGM ../tcbl/$PGM.cbl \
      -static \
      -I $SQLCOPY \
      -I $COBCOPY \
@@ -34,7 +34,7 @@ cobc -std=default -x -o ../bin/$RPGM ../tcbl/$PGM.cbl ../tcbl/$LLM.cbl \
 
 # Check return code
 if [ "$?" -eq 0 ]; then
-    echo "Complier Return code was ZERO."
+    echo "SUCCESS: Compile Return code is ZERO."
 else
-    echo "Complier Return code not ZERO."
+    echo "FAIL: Compile Return code is NOT ZERO."
 fi

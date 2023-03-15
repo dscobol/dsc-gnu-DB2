@@ -7,27 +7,24 @@
       *    This program will read all the records using a View supplied
       *    by the DB and display them.
       *
-      *    There are some differences between GnuCOBOL/DB2 LUW and 
+      *    There are some differences between GnuCOBOL/DB2 LUW and
       *       zOS COBOL/DB2 programs.
-      *
-      *    One difference is demonstrated in the 
-      *        9800-Connect-to-DB1 paragraph.
       *
       *    On zOS, the JCL makes the connection so there is no need for
       *       passing the username and password for the database.
       *
-      *    That is required with GnuCOBOL.
-      *    There are a number of ways to pass those parameters.
-      *    These programs use GETDBID, a very simple called
-      *    module that has the username and password embedded in it.
-      *    When called, it passes them up to the calling program which
-      *    then uses them to make the connection to the server.
+      *    With GnuCOBOL, passing those parameters into the program
+      *       is required.
+      *
+      *    This program will ACCEPT environment variables loaded during
+      *       the run step from an .env file.
       *
       * Maintenance Log
       * Date       Author        Maintenance Requirement
       * ---------- ------------  --------------------------------
       * 2020-08-29 dastagg       Created to learn.
       * 2023-03-13 dscobol       Updated notes about differences.
+      * 2023-03-14 dscobol       Use env vars from .env file.
       * 20XX-XX-XX               If you change me, change this.
       *
       **********************************************************
@@ -49,11 +46,11 @@
       *******************
       *    This is another difference between DB2 LUW
       *    and zOS DB2.
-      * 
+      *
       *    With DB2 LUW, if the Host Variables are not DECLAREd
       *    in the code, it is an error and it won't bind.
       *
-      *    With zOS DB2, DECLAREing them is not required and if 
+      *    With zOS DB2, DECLAREing them is not required and if
       *    present, will cause a Warning(RC=04) for the compile.
 
            EXEC SQL BEGIN DECLARE SECTION END-EXEC.
@@ -64,14 +61,13 @@
            12 HV-Last-Name            PIC X(15).
            12 HV-Work-Dept            PIC X(03).
 
-      *    This is hardcoded for the SAMPLE DB.
-      *    You might need to update this for your DB.
-       01  DB-Connection-Info.
-           12 DB-Alias                PIC X(8) VALUE 'SAMPLE'.
-           12 DB-User-ID              PIC X(10).
-           12 DB-Password.
-              15 DB-Passwd-Length     PIC S9(4) COMP-5  VALUE 0.
-              15 DB-Passwd-Name       PIC X(18).
+      *    DB1 connection parameters.
+       01  DB1-DBName                 PIC X(8).
+       01  DB1-User-ID                PIC X(10).
+       01  DB1-Password.
+           49 DB1-Passwd-Length       PIC S9(4) COMP-5  VALUE 0.
+           49 DB1-Passwd-Name         PIC X(18).
+
            EXEC SQL END DECLARE SECTION END-EXEC.
       *******************
 
@@ -88,9 +84,6 @@
           88 SQL-STATUS-OK             VALUE    0.
           88 SQL-STATUS-NOT-FOUND      VALUE  100.
           88 SQL-STATUS-DUP            VALUE -803.
-
-       01  WS-Called-Programs.
-           12 WS-GetDBId               PIC X(8) VALUE SPACES.
 
        01  WS-Counters.
            12 WS-Employee-Record-Cnt   PIC 9(4) COMP.
@@ -125,10 +118,10 @@
 
        2110-Display-Detail-Data.
            DISPLAY "Employee: ",
-              HV-Emp-Number, 
-              HV-First-Name, 
+              HV-Emp-Number,
+              HV-First-Name,
               HV-Middle-Init,
-              HV-Last-Name, 
+              HV-Last-Name,
               HV-Work-Dept.
 
        3000-End-Job.
@@ -163,7 +156,7 @@
                  DISPLAY "SQLCODE = " SQLCODE
                  PERFORM 3000-End-Job
                  MOVE 8 TO RETURN-CODE
-                 GOBACK 
+                 GOBACK
               END-IF
            END-IF.
 
@@ -182,13 +175,19 @@
            PERFORM 9812-Create-Connection-To-DB1.
 
        9811-Get-Credentials.
-           MOVE 'GETDBID' TO WS-GetDBId
-           CALL WS-GetDBId USING DB-User-ID, DB-Passwd-Name.
-      *    Passwords in a CONNECT statement must be entered 
+           ACCEPT DB1-DBName FROM ENVIRONMENT 'db2name'.
+           ACCEPT DB1-User-ID FROM ENVIRONMENT 'username'.
+           ACCEPT DB1-Passwd-Name FROM ENVIRONMENT 'password'.
+
+      *    Passwords in a CONNECT statement should be entered
       *    in a VARCHAR format with the length of the input string.
-           INSPECT DB-Passwd-Name
-              TALLYING DB-Passwd-Length
+           INSPECT DB1-Passwd-Name
+              TALLYING DB1-Passwd-Length
               FOR CHARACTERS BEFORE INITIAL " ".
+
+      D    DISPLAY "DB1-DBName " DB1-DBName.
+      D    DISPLAY "DB1-User-ID " DB1-User-ID.
+      D    DISPLAY "DB1-Passwd-Name " DB1-Passwd-Name.
 
        9812-Create-Connection-To-DB1.
            PERFORM 9814-Connect-To-DB1
@@ -200,9 +199,10 @@
            END-IF.
 
        9814-Connect-To-DB1.
-           EXEC SQL CONNECT TO :DB-Alias
-                USER :DB-User-ID
-                USING :DB-Passwd-Name
+           EXEC SQL
+                CONNECT TO :DB1-DBName
+                USER :DB1-User-ID
+                USING :DB1-Password
               END-EXEC.
            MOVE SQLCODE TO WS-SQL-STATUS.
 
