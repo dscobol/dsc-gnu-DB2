@@ -12,6 +12,3 @@ export DD_OUTFILE="../spool/dbcbex13-report.rpt"
 
 # run program
 ../bin/$PGM
-
-# Remove the variables in the .env file from the environment
-unset $(grep -v '^#' ../.env | sed -E 's/(.*)=.*/\1/' | xargs)
