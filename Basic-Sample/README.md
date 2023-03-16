@@ -84,7 +84,7 @@ After cloning the repository, CD into the Basic-Sample directory and run this co
 ```
 mkdir bin p-sqlscripts spool sql SQLScripts tcbl
 ```
-### Create the .env file
+### Create the .env file - This only needs to be done once.
 **IMPORTANT NOTE:**
 The .env file will contain the userid and password to the database. **MAKE SURE** to add ".env" to your .gitignore so when you commit changes, the .env file will NOT be included.
 
@@ -113,7 +113,7 @@ If so, in the terminal run:
 ```
 and the results will print on the screen.
 
-Follow this same procedure for the 3 other examples.
+Follow this same procedure for the 3 other examples but replacing the "DBCBEX01" with the name of the program to be run.
 
 ### What about SQLScripts and p-sqlscripts?
 
