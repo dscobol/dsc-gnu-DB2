@@ -90,18 +90,18 @@ The .env file will contain the userid and password to the database. **MAKE SURE*
 
 Copy docs/Code-env.txt to the Basic-Sample root and rename to .env .
 
-Edit .env  changing name to sample , userid to the userid and passwd to the password.
+- Edit .env  changing name to sample , userid to the userid and passwd to the password.
 
 ### Running a program - DBCBEX01
 Copy docs/Code-prep-bind.txt into sql/ and rename to DBCBEX01.sql
 
-Update the top line replacing DB with sample, username with the Sample DB userid (typically db2inst1) and the password.
+- Update the top line replacing DB with sample, username with the Sample DB userid (typically db2inst1) and the password.
 
-Replace "PGM" with "DBCBEX01" in all 3 (.sqb, .cbl, .bnd) locations.
+- Replace "PGM" with "DBCBEX01" in all 3 (.sqb, .cbl, .bnd) locations.
 
 The "job" is divided into 2 scripts:
-- "prep, bind, compile, and link"
-- "run".
+1. "prep, bind, compile, and link"
+2. "run".
 
 In the terminal, cd into jcl/ and run:
 ```
