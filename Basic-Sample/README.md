@@ -96,6 +96,7 @@ Edit .env  changing name to sample , userid to the userid and passwd to the pass
 Copy docs/Code-prep-bind.txt into sql/ and rename to DBCBEX01.sql
 
 Update the top line replacing DB with sample, username with the Sample DB userid (typically db2inst1) and the password.
+
 Replace "PGM" with "DBCBEX01" in all 3 (.sqb, .cbl, .bnd) locations.
 
 The "job" is divided into 2 scripts:
