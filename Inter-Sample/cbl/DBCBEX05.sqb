@@ -1,0 +1,190 @@
+      ***********************************************************
+      * Program name:    DBCBEX05
+      * Original author: David Stagowski
+      *
+      *    Description: Example 05: DB Record Processing: Update
+      *
+      *    This program will update a record from DB.
+      *
+      *    There are some differences between GnuCOBOL/DB2 LUW and
+      *       zOS COBOL/DB2 programs.
+      *
+      *    On zOS, the JCL makes the connection so there is no need for
+      *       passing the username and password for the database.
+      *
+      *    With GnuCOBOL, passing those parameters into the program
+      *       is required.
+      *
+      *    This program will ACCEPT environment variables loaded during
+      *       the run step from an .env file.
+      *
+      * Maintenance Log
+      * Date       Author        Maintenance Requirement
+      * ---------- ------------  --------------------------------
+      * 2020-08-29 dastagg       Created to learn.
+      * 2023-03-13 dscobol       Updated notes about differences.
+      * 2023-03-18 dscobol       Use env vars from .env file.
+      * 20XX-XX-XX               If you change me, change this.
+
+      ***********************************************************
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. DBCBEX05.
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+      * SOURCE-COMPUTER.   IBM WITH DEBUGGING MODE.
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+
+           EXEC SQL
+               INCLUDE SQLCA
+           END-EXEC.
+
+      *******************
+      *    This is another difference between DB2 LUW
+      *    and zOS DB2.
+      *
+      *    With DB2 LUW, if the Host Variables are not DECLAREd
+      *    in the code, it is an error and it won't bind.
+      *
+      *    With zOS DB2, DECLAREing them is not required and if
+      *    present, will cause a Warning(RC=04) for the compile.
+
+           EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01  HV-Employee-Row.
+           12 HV-Emp-Number           PIC X(06).
+           12 HV-First-Name           PIC X(12).
+           12 HV-Middle-Init          PIC X(01).
+           12 HV-Last-Name            PIC X(15).
+           12 HV-Work-Dept            PIC X(03).
+           12 HV-Phone-Number         PIC X(04).
+           12 HV-Hire-Date            PIC X(10).
+           12 HV-Job-Title            PIC X(08).
+           12 HV-Edu-Level            PIC S9(04) COMP-5.
+           12 HV-Gender               PIC X(01).
+           12 HV-Birth-Date           PIC x(10).
+           12 HV-Salary               PIC S9(7)V99 COMP-3.
+           12 HV-Bonus                PIC S9(7)V99 COMP-3.
+           12 HV-Commission           PIC S9(7)V99 COMP-3.
+
+      *    DB1 connection parameters.
+       01  DB1-DBName                 PIC X(8).
+       01  DB1-User-ID                PIC X(10).
+       01  DB1-Password.
+           49 DB1-Passwd-Length       PIC S9(4) COMP-5  VALUE 0.
+           49 DB1-Passwd-Name         PIC X(18).
+
+           EXEC SQL END DECLARE SECTION END-EXEC.
+      *******************
+
+       01 WS-SQL-STATUS                PIC S9(9) COMP-5.
+          88 SQL-STATUS-OK             VALUE    0.
+          88 SQL-STATUS-NOT-FOUND      VALUE  100.
+          88 SQL-STATUS-DUP            VALUE -803.
+
+       01 EOJ-Display-Messages.
+           12 EOJ-End-Message PIC X(042) VALUE
+              "*** Program DCBCEX05 - End of Run Messages".
+
+       PROCEDURE DIVISION.
+       0000-Mainline.
+           PERFORM 1000-Begin-Job.
+           PERFORM 2000-Process.
+           PERFORM 3000-End-Job.
+           GOBACK.
+
+       1000-Begin-Job.
+           PERFORM 9800-Connect-to-DB1.
+
+       2000-Process.
+           IF SQL-STATUS-OK
+              PERFORM 2100-Process-Data
+           END-IF.
+
+       2100-Process-Data.
+           MOVE '000020' TO HV-Emp-Number.
+           MOVE '9999'   TO HV-Phone-Number.
+           PERFORM 6100-Update-DB1.
+
+           IF SQL-STATUS-OK
+              DISPLAY "It worked!"
+              DISPLAY "The data: " HV-Employee-Row
+           END-IF.
+
+       3000-End-Job.
+           EXEC SQL CONNECT RESET END-EXEC.
+           MOVE SQLCODE TO WS-SQL-STATUS.
+
+           DISPLAY EOJ-End-Message.
+           DISPLAY "SQLCODE at 3000-End-Job: " SQLCODE.
+
+       6100-Update-DB1.
+           EXEC SQL
+              UPDATE EMPLOYEE2
+              SET PHONENO = :HV-Phone-Number
+              WHERE EMPNO = :HV-Emp-Number
+           END-EXEC.
+           MOVE SQLCODE TO WS-SQL-STATUS.
+           IF SQL-STATUS-OK
+              CONTINUE
+           ELSE
+              DISPLAY "*** WARNING ***"
+              DISPLAY "There was a problem Updating the record."
+              DISPLAY "SQLCODE = " SQLCODE
+              PERFORM 3000-End-Job
+              MOVE 8 TO RETURN-CODE
+              GOBACK
+           END-IF.
+
+       9800-Connect-to-DB1.
+           PERFORM 9810-Setup-DB1-Connection.
+           IF SQL-STATUS-OK
+              CONTINUE
+           ELSE
+              DISPLAY "*** The DB connection is not valid!***"
+              DISPLAY "Exiting the program.!"
+              GOBACK
+           END-IF.
+
+       9810-Setup-DB1-Connection.
+           PERFORM 9811-Get-Credentials.
+           PERFORM 9812-Create-Connection-To-DB1.
+
+       9811-Get-Credentials.
+           ACCEPT DB1-DBName FROM ENVIRONMENT 'db2name'.
+           ACCEPT DB1-User-ID FROM ENVIRONMENT 'username'.
+           ACCEPT DB1-Passwd-Name FROM ENVIRONMENT 'password'.
+
+      *    Passwords in a CONNECT statement should be entered
+      *    in a VARCHAR format with the length of the input string.
+           INSPECT DB1-Passwd-Name
+              TALLYING DB1-Passwd-Length
+              FOR CHARACTERS BEFORE INITIAL " ".
+
+      D    DISPLAY "DB1-DBName " DB1-DBName.
+      D    DISPLAY "DB1-User-ID " DB1-User-ID.
+      D    DISPLAY "DB1-Passwd-Name " DB1-Passwd-Name.
+
+       9812-Create-Connection-To-DB1.
+           PERFORM 9814-Connect-To-DB1
+           IF SQL-STATUS-OK
+              PERFORM 9816-Create-Cursor-DB1
+              IF SQL-STATUS-OK
+                 PERFORM 9818-Open-Cursor-DB1
+              END-IF
+           END-IF.
+
+       9814-Connect-To-DB1.
+           EXEC SQL
+                CONNECT TO :DB1-DBName
+                USER :DB1-User-ID
+                USING :DB1-Password
+              END-EXEC.
+           MOVE SQLCODE TO WS-SQL-STATUS.
+
+       9816-Create-Cursor-DB1.
+      *    Not used in this program
+
+       9818-Open-Cursor-DB1.
+      *    Not used in this program

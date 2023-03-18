@@ -1,0 +1,4 @@
+# DB1 Connection parameters
+db2name=name
+username=userid
+password=passwd

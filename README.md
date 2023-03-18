@@ -12,6 +12,8 @@ See the README for more information.
 
 ## Inter-Sample directory
 
-This is a series of programs that will insert, update, and delete records from the Sample database.
+This is a series that will:
+- Create a new Table in the Sample database
+- Then insert, update, and delete rows using that new Table
 
-See the README for more information including instructions to restore the database to it's original state.
+See the README for more information.
